@@ -99,7 +99,7 @@ jobs:
           patterns: |
             cosmwasm-contracts/*.wasm
             javascore-contracts/*.jar
-        output: check256sums.txt
+          output: check256sums.txt
 
       - name: Changelog
         uses: scottbrenner/generate-changelog-action@master
