@@ -1,11 +1,13 @@
 name: Pre-release
 on:
   push:
-    tags:
-      - "v[0-9]+.[0-9]+.[0-9]+"
-      - "v[0-9]+.[0-9]+.[0-9]+-alpha.[0-9]+"
-      - "v[0-9]+.[0-9]+.[0-9]+-beta.[0-9]+"
-      - "v[0-9]+.[0-9]+.[0-9]+-rc[0-9]+"
+    branches:
+      - "**"
+    # tags:
+    #   - "v[0-9]+.[0-9]+.[0-9]+"
+    #   - "v[0-9]+.[0-9]+.[0-9]+-alpha.[0-9]+"
+    #   - "v[0-9]+.[0-9]+.[0-9]+-beta.[0-9]+"
+    #   - "v[0-9]+.[0-9]+.[0-9]+-rc[0-9]+"
 permissions:
   contents: write
   packages: write
@@ -79,6 +81,8 @@ jobs:
         working-directory: contracts/evm
         run: |
           forge remappings > remappings.txt
+          pwd
+          ls
           # forge install foundry-rs/forge-std
           ls lib/openzeppelin-contracts-upgradeable/lib/openzeppelin-contracts/contracts/proxy/ERC1967/ERC1967Proxy.sol
           forge build
