@@ -90,6 +90,8 @@ jobs:
           # forge build
           bash ./forge_build.sh
           cd artifacts && zip -r ../../solidity-contracts.zip . -j
+          ls
+          
       - name: Upload Artifacts
         uses: actions/upload-artifact@v3
         with:
