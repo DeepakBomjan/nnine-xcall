@@ -81,6 +81,7 @@ jobs:
 
       - name: Run Forge build
         run: |
+          forge remappings
           forge build
           # bash ./forge_build.sh
           # cd artifacts && zip -r ../../solidity-contracts.zip . -j
