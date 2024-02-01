@@ -80,6 +80,7 @@ jobs:
       - name: Run Forge build
         working-directory: contracts/evm
         run: |
+          git submodule update --init --recursive
           forge remappings > remappings.txt
           pwd
           ls
