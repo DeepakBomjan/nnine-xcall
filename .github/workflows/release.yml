@@ -82,7 +82,7 @@ jobs:
       - name: Run Forge build
         run: |
           forge remappings > remappings.txt
-          forge install foundry-rs/forge-std
+          # forge install foundry-rs/forge-std
           forge build
           # bash ./forge_build.sh
           # cd artifacts && zip -r ../../solidity-contracts.zip . -j
