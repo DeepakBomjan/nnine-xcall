@@ -1,4 +1,6 @@
 #!/bin/sh
+set -e
+forge remappings
 forge build
 mkdir artifacts
 cat out/CallService.sol/CallService.json | jq '{"abi": .abi, "bytecode": .bytecode.object}'  > artifacts/xcall_abi_bytecode.json
