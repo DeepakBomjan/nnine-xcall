@@ -61,12 +61,37 @@ jobs:
         with:
           name: cosmwasm-contracts
           path: cosmwasm-contracts.zip
+  build_solidity:
+    name: Build Solidity Contracts
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v3
+        with:
+          submodules: true
+      - name: Install Foundry
+        uses: foundry-rs/foundry-toolchain@v1
+        with:
+          version: nightly
+
+      - name: Run Forge build
+        working-directory: contracts/javascore
+        run: |
+          bash ./forge_build.sh
+          cd artifacts && zip -r ../../solidity-contracts.zip . -j
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: solidity-contracts
+          path: solidity-contracts.zip
+
   release:
     name: Release and Publish
     runs-on: ubuntu-latest
     needs:
       - build_javascore
       - build_wasm
+      - build_solidity
     steps:
       - name: Initialize variables
         id: vars
@@ -84,6 +109,12 @@ jobs:
         with:
           name: cosmwasm-contracts
           path: cosmwasm-contracts
+      
+      - name: Download Solidity Artifacts
+        uses: actions/download-artifact@v2
+        with:
+          name: solidity-contracts
+          path: solidity-contracts
 
       - name: Unzip Javascore Artifacts
         run: unzip javascore-contracts/javascore-contracts.zip -d javascore-contracts && rm -rf javascore-contracts/javascore-contracts.zip
@@ -91,6 +122,8 @@ jobs:
       - name: Unzip Cosmwasm Artifacts
         run: unzip cosmwasm-contracts/cosmwasm-contracts.zip -d cosmwasm-contracts && rm -rf cosmwasm-contracts/cosmwasm-contracts.zip
 
+      - name: Unzip Cosmwasm Artifacts
+        run: unzip solidity-contracts/solidity-contracts.zip -d solidity-contracts && rm -rf solidity-contracts/solidity-contracts.zip
       - name: Remove extra files
         run: |
           find ./cosmwasm-contracts ! -name 'cw_xcall_[0-9].[0-9].[0-9].wasm' -type f -exec rm {} +
@@ -102,6 +135,7 @@ jobs:
           patterns: |
             cosmwasm-contracts/*.wasm
             javascore-contracts/*.jar
+            solidity-contracts/*
           output: check256sums.txt
 
       - name: Changelog
@@ -121,5 +155,6 @@ jobs:
           files: |
             ./javascore-contracts/*.jar
             ./cosmwasm-contracts/*.wasm
+            ./solidity-contracts/*
             check256sums.txt
 
