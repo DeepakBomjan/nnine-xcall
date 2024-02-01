@@ -1,4 +1,4 @@
-## Foundry
+## Solidity XCall
 
 **Foundry is a blazing fast, portable and modular toolkit for Ethereum application development written in Rust.**
 
@@ -48,16 +48,106 @@ $ anvil
 ### Deploy
 
 ```shell
-export PRIVATE_KEY=<your-private-key>
-
-$ forge script script/CallService.s.sol:CallServiceScript --rpc-url <your_rpc_url> --private-key <your_private_key>
-
-For Example: (deploying the contract on localnet) 
-$ forge script script/CallService.s.sol:CallServiceScript --fork-url http://localhost:8545 \
---private-key $PRIVATE_KEY --broadcast
-
+./deploy_script.sh --contract <contract> --<action> --env <environment> --chain <chain1> <chain2> ... --version <filename-version>
 ```
 
+Adapter(Wormhole and Layerzero) Configuration between 2 chains
+```shell
+./deploy_script.sh --contract <contract> --configure --env <environment> --chain <chain1> <chain2> 
+```
+Replace the placeholders with your specific values:
+
+- `<contract>`: Contract to deploy or upgrade
+- `<action>`: Choose either "--deploy" to deploy contracts or "--upgrade" to upgrade existing contracts.
+- `<environment>`: Select the deployment environment ("mainnet," "testnet," or "local").
+- `<chain1>`, `<chain2>`, ...: Specify one or more chains for deployment. Use "all" to deploy to all valid chains for the environment.
+- `filename-version`: filename of new contract to upgrade like, CallServiceV2.sol (only needed in upgrade)
+
+ Valid Options
+
+- *Actions*: "deploy", "upgrade"
+- *Environments*: "mainnet", "testnet", "local"
+- *Contract Types*: "callservice" "wormhole" "layerzero" "centralized" "mock"
+
+### Examples
+
+#### Deploy the "callservice" contract to mainnet on Ethereum and Binance chains:
+
+```shell
+./deploy_script.sh --contract callservice --deploy --env mainnet --chain ethereum binance
+```
+
+#### Upgrade the "callservice" contract to testnet on all available chains:
+
+```shell
+./deploy_script.sh --contract callservice --upgrade --env testnet --chain all --version CallServiceV2.sol
+```
+### xCall Configurations
+
+```shell
+cast send <contract_address>  "setProtocolFee(uint256 _value)" <value> --rpc-url <rpc_url> --private-key  <private-key>
+```
+
+```shell
+cast send <contract_address>  "setProtocolFeeHandler(address _addr)" <addr> --rpc-url <rpc_url> --private-key <private-key>
+```
+
+```shell
+cast send <contract_address>  "setDefaultConnection(string memory _nid,address connection)" <nid> <connection> --rpc-url <rpc_url> --private-key <private-key>
+```
+
+### xCall Flow Test
+
+#### Step 0: Copy Environment File
+
+Start by copying the `.env.example` file to `.env`:
+
+```bash
+cp .env.example .env
+```
+
+#### Step 1: Deploy Contracts
+
+```bash
+#deploy xcall
+./deploy_script.sh --contract callservice --deploy --env testnet --chain <source_chain> <destination_chain> 
+```
+
+```bash
+#deploy adapter (wormhole layerzero centralized)
+./deploy_script.sh --contract wormhole --deploy --env testnet --chain <source_chain> <destination_chain> 
+```
+
+```bash
+#deploy dapp
+./deploy_script.sh --contract mock --deploy --env testnet --chain <source_chain> <destination_chain> 
+```
+#### Step 3: Configure Connections
+
+If you are using Wormhole or Layerzero for cross-chain communication, you will need to configure the connection. Execute the provided script to set up the connection. 
+
+```bash
+./deploy_script.sh --contract <adapter> --configure --env testnet --chain <source_chain> <destination_chain>
+```
+- *adapter*: "layerzero", "wormhole", "centralized"
+
+#### Step 4: Add Connections in Dapp
+
+In your dapp, add the connections for cross-chain communication.
+
+```bash
+forge script DeployCallService  -s "addConnection(string memory chain1, string memory chain2)" <source_chain> <destination_chain> --fork-url <source_chain> --broadcast        
+forge script DeployCallService  -s "addConnection(string memory chain1, string memory chain2)" <destination_chain> <source_chain> --fork-url <destination_chain> --broadcast   
+```
+
+#### Step 5: Execute Test
+```bash
+$ ./test_xcall_flow.sh --src <source_chain> --dest <destination_chain> --fee <value>
+```
+
+- `--fee <value>`: Sets the transaction fee (in wei). The value must be a number.
+- `--src <source_chain>`: Sets the source chain for the transaction. Valid chain options are `fuji`, `bsctest`, `base_goerli`, `optimism_sepolia`, and `arbitrum_goerli`.
+- `--dest <destination_chain>`: Sets the destination chain for the transaction. Valid chain options are `fuji`, `bsctest`, `base_goerli`, `optimism_sepolia`, and `arbitrum_goerli`.
 
 ### Cast
 Set the CONTRACT_ADDRESS variable in your terminal:
