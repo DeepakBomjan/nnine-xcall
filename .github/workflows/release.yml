@@ -81,15 +81,15 @@ jobs:
         working-directory: contracts/evm
         run: |
           git submodule update --init --recursive
-          forge remappings > remappings.txt
+          # forge remappings > remappings.txt
           pwd
           ls
-          find lib
+          # find lib
           # forge install foundry-rs/forge-std
-          ls lib/openzeppelin-contracts-upgradeable/lib/openzeppelin-contracts/contracts/proxy/ERC1967/ERC1967Proxy.sol
-          forge build
-          # bash ./forge_build.sh
-          # cd artifacts && zip -r ../../solidity-contracts.zip . -j
+          # ls lib/openzeppelin-contracts-upgradeable/lib/openzeppelin-contracts/contracts/proxy/ERC1967/ERC1967Proxy.sol
+          # forge build
+          bash ./forge_build.sh
+          cd artifacts && zip -r ../../solidity-contracts.zip . -j
       - name: Upload Artifacts
         uses: actions/upload-artifact@v3
         with:
