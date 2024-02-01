@@ -81,8 +81,9 @@ jobs:
 
       - name: Run Forge build
         run: |
-          bash ./forge_build.sh
-          cd artifacts && zip -r ../../solidity-contracts.zip . -j
+          forge build
+          # bash ./forge_build.sh
+          # cd artifacts && zip -r ../../solidity-contracts.zip . -j
       - name: Upload Artifacts
         uses: actions/upload-artifact@v3
         with:
