@@ -83,6 +83,7 @@ jobs:
           forge remappings > remappings.txt
           pwd
           ls
+          find lib
           # forge install foundry-rs/forge-std
           ls lib/openzeppelin-contracts-upgradeable/lib/openzeppelin-contracts/contracts/proxy/ERC1967/ERC1967Proxy.sol
           forge build
