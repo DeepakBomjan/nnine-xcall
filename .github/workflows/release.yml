@@ -11,10 +11,6 @@ permissions:
   packages: write
   repository-projects: write
 
-defaults:
-  run:
-    working-directory: contracts/evm
-
 
 jobs:
   # build_javascore:
@@ -80,9 +76,11 @@ jobs:
           version: nightly
 
       - name: Run Forge build
+        working-directory: contracts/evm
         run: |
           forge remappings > remappings.txt
           # forge install foundry-rs/forge-std
+          ls lib/openzeppelin-contracts-upgradeable/lib/openzeppelin-contracts/contracts/proxy/ERC1967/ERC1967Proxy.sol
           forge build
           # bash ./forge_build.sh
           # cd artifacts && zip -r ../../solidity-contracts.zip . -j
