@@ -12,55 +12,55 @@ permissions:
   repository-projects: write
 
 jobs:
-  build_javascore:
-    name: Build Javascore Contracts
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-        with:
-          submodules: true
+  # build_javascore:
+  #   name: Build Javascore Contracts
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Checkout code
+  #       uses: actions/checkout@v3
+  #       with:
+  #         submodules: true
 
-      - name: Build Javascore Contracts
-        working-directory: contracts/javascore
-        run: |
-          ./gradlew clean build
-          ./gradlew optimizedJar
-          ./gradlew zipOutputOptimizedJars
-      - name: Upload Artifacts
-        uses: actions/upload-artifact@v3
-        with:
-          name: javascore-contracts
-          path: ./contracts/javascore/build/javascore-contracts.zip
-  build_wasm:
-    name: Build Cosmwasm Contracts
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout sources
-        uses: actions/checkout@v3
-        with:
-          submodules: true
-      - name: Install stable toolchain
-        uses: actions-rs/toolchain@v1
-        with:
-          toolchain: 1.69.0
-          target: wasm32-unknown-unknown
-          override: true
-          profile: minimal
-      - name: Cache Rust dependencies
-        uses: Swatinem/rust-cache@v2
-      - name: Compile WASM
-        run: |
-          rustup component add rustfmt --toolchain 1.69.0-x86_64-unknown-linux-gnu
-          rustup component add clippy --toolchain 1.69.0-x86_64-unknown-linux-gnu     
-          bash ./scripts/optimize-cosmwasm.sh
-          cd artifacts/archway && zip -r ../../cosmwasm-contracts.zip . -j
+  #     - name: Build Javascore Contracts
+  #       working-directory: contracts/javascore
+  #       run: |
+  #         ./gradlew clean build
+  #         ./gradlew optimizedJar
+  #         ./gradlew zipOutputOptimizedJars
+  #     - name: Upload Artifacts
+  #       uses: actions/upload-artifact@v3
+  #       with:
+  #         name: javascore-contracts
+  #         path: ./contracts/javascore/build/javascore-contracts.zip
+  # build_wasm:
+  #   name: Build Cosmwasm Contracts
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Checkout sources
+  #       uses: actions/checkout@v3
+  #       with:
+  #         submodules: true
+  #     - name: Install stable toolchain
+  #       uses: actions-rs/toolchain@v1
+  #       with:
+  #         toolchain: 1.69.0
+  #         target: wasm32-unknown-unknown
+  #         override: true
+  #         profile: minimal
+  #     - name: Cache Rust dependencies
+  #       uses: Swatinem/rust-cache@v2
+  #     - name: Compile WASM
+  #       run: |
+  #         rustup component add rustfmt --toolchain 1.69.0-x86_64-unknown-linux-gnu
+  #         rustup component add clippy --toolchain 1.69.0-x86_64-unknown-linux-gnu     
+  #         bash ./scripts/optimize-cosmwasm.sh
+  #         cd artifacts/archway && zip -r ../../cosmwasm-contracts.zip . -j
           
-      - name: Upload Artifacts
-        uses: actions/upload-artifact@v3
-        with:
-          name: cosmwasm-contracts
-          path: cosmwasm-contracts.zip
+  #     - name: Upload Artifacts
+  #       uses: actions/upload-artifact@v3
+  #       with:
+  #         name: cosmwasm-contracts
+  #         path: cosmwasm-contracts.zip
   build_solidity:
     name: Build Solidity Contracts
     runs-on: ubuntu-latest
@@ -98,17 +98,17 @@ jobs:
         run: |
           echo «::set-output name=date::$(date +'%Y-%m-%d')»
           echo «::set-output name=sha8::$(echo ${GITHUB_SHA} | cut -c1-8)»
-      - name: Download Javascore Artifacts
-        uses: actions/download-artifact@v2
-        with:
-          name: javascore-contracts
-          path: javascore-contracts
+      # - name: Download Javascore Artifacts
+      #   uses: actions/download-artifact@v2
+      #   with:
+      #     name: javascore-contracts
+      #     path: javascore-contracts
 
-      - name: Download Cosmwasm Artifacts
-        uses: actions/download-artifact@v2
-        with:
-          name: cosmwasm-contracts
-          path: cosmwasm-contracts
+      # - name: Download Cosmwasm Artifacts
+      #   uses: actions/download-artifact@v2
+      #   with:
+      #     name: cosmwasm-contracts
+      #     path: cosmwasm-contracts
       
       - name: Download Solidity Artifacts
         uses: actions/download-artifact@v2
@@ -116,25 +116,23 @@ jobs:
           name: solidity-contracts
           path: solidity-contracts
 
-      - name: Unzip Javascore Artifacts
-        run: unzip javascore-contracts/javascore-contracts.zip -d javascore-contracts && rm -rf javascore-contracts/javascore-contracts.zip
+      # - name: Unzip Javascore Artifacts
+      #   run: unzip javascore-contracts/javascore-contracts.zip -d javascore-contracts && rm -rf javascore-contracts/javascore-contracts.zip
 
-      - name: Unzip Cosmwasm Artifacts
-        run: unzip cosmwasm-contracts/cosmwasm-contracts.zip -d cosmwasm-contracts && rm -rf cosmwasm-contracts/cosmwasm-contracts.zip
+      # - name: Unzip Cosmwasm Artifacts
+      #   run: unzip cosmwasm-contracts/cosmwasm-contracts.zip -d cosmwasm-contracts && rm -rf cosmwasm-contracts/cosmwasm-contracts.zip
 
       - name: Unzip Cosmwasm Artifacts
         run: unzip solidity-contracts/solidity-contracts.zip -d solidity-contracts && rm -rf solidity-contracts/solidity-contracts.zip
-      - name: Remove extra files
-        run: |
-          find ./cosmwasm-contracts ! -name 'cw_xcall_[0-9].[0-9].[0-9].wasm' -type f -exec rm {} +
-          find ./javascore-contracts ! -name 'xcall-[0-9].[0-9].[0-9]-optimized.jar' -type f -exec rm {} +
+      # - name: Remove extra files
+      #   run: |
+      #     find ./cosmwasm-contracts ! -name 'cw_xcall_[0-9].[0-9].[0-9].wasm' -type f -exec rm {} +
+      #     find ./javascore-contracts ! -name 'xcall-[0-9].[0-9].[0-9]-optimized.jar' -type f -exec rm {} +
 
       - name: Generate checksum
         uses: jmgilman/actions-generate-checksum@v1
         with:
           patterns: |
-            cosmwasm-contracts/*.wasm
-            javascore-contracts/*.jar
             solidity-contracts/*
           output: check256sums.txt
 
@@ -153,8 +151,6 @@ jobs:
           body: |
             ${{ steps.Changelog.outputs.changelog }}
           files: |
-            ./javascore-contracts/*.jar
-            ./cosmwasm-contracts/*.wasm
             ./solidity-contracts/*
             check256sums.txt
 
