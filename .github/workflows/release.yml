@@ -11,6 +11,11 @@ permissions:
   packages: write
   repository-projects: write
 
+defaults:
+  run:
+    working-directory: contracts/evm
+
+
 jobs:
   # build_javascore:
   #   name: Build Javascore Contracts
