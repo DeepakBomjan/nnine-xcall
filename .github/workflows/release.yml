@@ -75,7 +75,7 @@ jobs:
           version: nightly
 
       - name: Run Forge build
-        working-directory: contracts/javascore
+        working-directory: contracts/evm
         run: |
           bash ./forge_build.sh
           cd artifacts && zip -r ../../solidity-contracts.zip . -j
